@@ -4,15 +4,24 @@ out the development guide https://matplotlib.org/devdocs/devel/index.html
 -->
 
 ## PR summary
-<!-- Please provide at least 1-2 sentences describing the pull request in detail
-(Why is this change required?  What problem does it solve?) and link to relevant
-issues and PRs.
+<!-- Please describe the pull request, using the questions below as guidance, and link to any relevant issues and PRs:
 
-Also please summarize the changes in the title, for example "Raise ValueError on
+- Why is this change necessary?
+- What problem does it solve?
+- What is the reasoning for this implementation?
+
+Additionally, please summarize the changes in the title, for example "Raise ValueError on
 non-numeric input to set_xlim" and avoid non-descriptive titles such as "Addresses
 issue #8576".
+
+If possible, please provide a minimum self-contained example.
 -->
 
+## AI Disclosure
+<!-- If you used AI in writing this PR, please briefly describe how.
+Read our policy at
+https://matplotlib.org/devdocs/devel/contribute.html#restrictions-on-generative-ai-usage
+-->
 
 ## PR checklist
 <!-- Please mark any checkboxes that do not apply to this PR as [N/A].-->

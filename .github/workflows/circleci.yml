@@ -1,9 +1,12 @@
 ---
 name: "CircleCI artifact handling"
 on: [status]
+
+permissions: {}
+
 jobs:
   circleci_artifacts_redirector_job:
-    if: "${{ github.event.context == 'ci/circleci: docs-python39' }}"
+    if: "${{ github.event.context == 'ci/circleci: docs-python3' }}"
     permissions:
       statuses: write
     runs-on: ubuntu-latest
@@ -11,16 +14,16 @@ jobs:
     steps:
       - name: GitHub Action step
         uses:
-          scientific-python/circleci-artifacts-redirector-action@4e13a10d89177f4bfc8007a7064bdbeda848d8d1  # v1.0.0
+          scientific-python/circleci-artifacts-redirector-action@5d358ff96e96429a5c64a969bb4a574555439f4f  # v1.3.1
         with:
           repo-token: ${{ secrets.GITHUB_TOKEN }}
           api-token: ${{ secrets.CIRCLECI_TOKEN }}
           artifact-path: 0/doc/build/html/index.html
-          circleci-jobs: docs-python39
+          circleci-jobs: docs-python3
           job-title: View the built docs
 
   post_warnings_as_review:
-    if: "${{ github.event.context == 'ci/circleci: docs-python39' }}"
+    if: "${{ github.event.context == 'ci/circleci: docs-python3' }}"
     permissions:
       contents: read
       checks: write
@@ -28,16 +31,20 @@ jobs:
     runs-on: ubuntu-latest
     name: Post warnings/errors as review
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd  # v6.0.2
+        with:
+          persist-credentials: false
 
       - name: Fetch result artifacts
         id: fetch-artifacts
+        env:
+          target_url: "${{ github.event.target_url }}"
         run: |
-          python .circleci/fetch_doc_logs.py "${{ github.event.target_url }}"
+          python .circleci/fetch_doc_logs.py "${target_url}"
 
       - name: Set up reviewdog
         if: "${{ steps.fetch-artifacts.outputs.count != 0 }}"
-        uses: reviewdog/action-setup@v1
+        uses: reviewdog/action-setup@d8a7baabd7f3e8544ee4dbde3ee41d0011c3a93f  # v1.5.0
         with:
           reviewdog_version: latest
 

@@ -7,7 +7,7 @@ This page contains a few tutorials for using Matplotlib.  For the old tutorials,
 
 For shorter examples, see our :ref:`examples page <examples-index>`.
 You can also find :ref:`external resources <resources-index>` and
-a :ref:`FAQ <faq-index>` in our :ref:`user guide <users-guide-index>`.
+a :ref:`FAQ <howto-faq>` in our :ref:`user guide <users-guide-index>`.
 
 
 .. raw:: html
@@ -29,6 +29,23 @@ a :ref:`FAQ <faq-index>` in our :ref:`user guide <users-guide-index>`.
 .. raw:: html
 
       <div class="sphx-glr-thumbnail-title">Pyplot tutorial</div>
+    </div>
+
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="Coding shortcuts">
+
+.. only:: html
+
+  .. image:: /tutorials/images/thumb/sphx_glr_coding_shortcuts_thumb.png
+    :alt: Coding shortcuts
+
+  :ref:`sphx_glr_tutorials_coding_shortcuts.py`
+
+.. raw:: html
+
+      <div class="sphx-glr-thumbnail-title">Coding shortcuts</div>
     </div>
 
 
@@ -92,6 +109,7 @@ a :ref:`FAQ <faq-index>` in our :ref:`user guide <users-guide-index>`.
    :hidden:
 
    /tutorials/pyplot
+   /tutorials/coding_shortcuts
    /tutorials/images
    /tutorials/lifecycle
    /tutorials/artists

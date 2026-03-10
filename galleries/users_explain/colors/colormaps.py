@@ -161,11 +161,26 @@ plot_color_gradients('Sequential',
 # an excellent example of this).
 
 plot_color_gradients('Sequential (2)',
-                     ['binary', 'gist_yarg', 'gist_gray', 'gray', 'bone',
-                      'pink', 'spring', 'summer', 'autumn', 'winter', 'cool',
-                      'Wistia', 'hot', 'afmhot', 'gist_heat', 'copper'])
+                     ['gray', 'bone', 'pink', 'spring', 'summer', 'autumn',
+                      'winter', 'cool', 'Wistia', 'hot', 'afmhot', 'gist_heat',
+                      'copper'])
 
 # %%
+# .. admonition:: Discouraged
+#
+#    For backward compatibility we additionally support the following colormap
+#    names, which are identical to other builtin colormaps. Their use is
+#    discouraged. Use the suggested replacement instead.
+#
+#    =========  =================================
+#    Colormap   Use identical replacement instead
+#    =========  =================================
+#    gist_gray 	gray
+#    gist_yarg 	gray_r
+#    binary 	gray_r
+#    =========  =================================
+#
+#
 # Diverging
 # ---------
 #
@@ -175,10 +190,15 @@ plot_color_gradients('Sequential (2)',
 # equal minimum :math:`L^*` values at opposite ends of the colormap. By these
 # measures, BrBG and RdBu are good options. coolwarm is a good option, but it
 # doesn't span a wide range of :math:`L^*` values (see grayscale section below).
+#
+# Berlin, Managua, and Vanimo are dark-mode diverging colormaps, with minimum
+# lightness at the center, and maximum at the extremes. These are taken from
+# F. Crameri's [scientific-colour-maps]_ version 8.0.1.
 
 plot_color_gradients('Diverging',
                      ['PiYG', 'PRGn', 'BrBG', 'PuOr', 'RdGy', 'RdBu', 'RdYlBu',
-                      'RdYlGn', 'Spectral', 'coolwarm', 'bwr', 'seismic'])
+                      'RdYlGn', 'Spectral', 'coolwarm', 'bwr', 'seismic',
+                      'berlin', 'managua', 'vanimo'])
 
 # %%
 # Cyclic
@@ -210,9 +230,9 @@ plot_color_gradients('Cyclic', ['twilight', 'twilight_shifted', 'hsv'])
 # These would not be good options for use as perceptual colormaps.
 
 plot_color_gradients('Qualitative',
-                     ['Pastel1', 'Pastel2', 'Paired', 'Accent', 'Dark2',
-                      'Set1', 'Set2', 'Set3', 'tab10', 'tab20', 'tab20b',
-                      'tab20c'])
+                     ['Pastel1', 'Pastel2', 'Paired', 'Accent', 'okabe_ito',
+                      'Dark2', 'Set1', 'Set2', 'Set3', 'tab10', 'tab20',
+                      'tab20b', 'tab20c'])
 
 # %%
 # Miscellaneous
@@ -441,3 +461,4 @@ for cmap_category, cmap_list in cmaps.items():
 # .. [colorblindness] http://www.color-blindness.com/
 # .. [IBM] https://doi.org/10.1109/VISUAL.1995.480803
 # .. [turbo] https://ai.googleblog.com/2019/08/turbo-improved-rainbow-colormap-for.html
+# .. [scientific-colour-maps] https://doi.org/10.5281/zenodo.1243862

@@ -1,3 +1,4 @@
+import functools
 import numbers
 
 import numpy as np
@@ -27,13 +28,14 @@ class SecondaryAxis(_AxesBase):
         self._orientation = orientation
         self._ticks_set = False
 
+        fig = self._parent.get_figure(root=False)
         if self._orientation == 'x':
-            super().__init__(self._parent.figure, [0, 1., 1, 0.0001], **kwargs)
+            super().__init__(fig, [0, 1., 1, 0.0001], **kwargs)
             self._axis = self.xaxis
             self._locstrings = ['top', 'bottom']
             self._otherstrings = ['left', 'right']
         else:  # 'y'
-            super().__init__(self._parent.figure, [0, 1., 0.0001, 1], **kwargs)
+            super().__init__(fig, [0, 1., 0.0001, 1], **kwargs)
             self._axis = self.yaxis
             self._locstrings = ['right', 'left']
             self._otherstrings = ['top', 'bottom']
@@ -144,10 +146,25 @@ class SecondaryAxis(_AxesBase):
         self._set_lims()
         super().apply_aspect(position)
 
-    @_docstring.copy(Axis.set_ticks)
-    def set_ticks(self, ticks, labels=None, *, minor=False, **kwargs):
-        ret = self._axis.set_ticks(ticks, labels, minor=minor, **kwargs)
-        self.stale = True
+    @functools.wraps(_AxesBase.set_xticks)
+    def set_xticks(self, *args, **kwargs):
+        if self._orientation == "y":
+            raise TypeError("Cannot set xticks on a secondary y-axis")
+        ret = super().set_xticks(*args, **kwargs)
+        self._ticks_set = True
+        return ret
+
+    @functools.wraps(_AxesBase.set_yticks)
+    def set_yticks(self, *args, **kwargs):
+        if self._orientation == "x":
+            raise TypeError("Cannot set yticks on a secondary x-axis")
+        ret = super().set_yticks(*args, **kwargs)
+        self._ticks_set = True
+        return ret
+
+    @functools.wraps(Axis.set_ticks)
+    def set_ticks(self, *args, **kwargs):
+        ret = self._axis.set_ticks(*args, **kwargs)
         self._ticks_set = True
         return ret
 
@@ -318,4 +335,4 @@ Other Parameters
 **kwargs : `~matplotlib.axes.Axes` properties.
     Other miscellaneous Axes parameters.
 '''
-_docstring.interpd.update(_secax_docstring=_secax_docstring)
+_docstring.interpd.register(_secax_docstring=_secax_docstring)

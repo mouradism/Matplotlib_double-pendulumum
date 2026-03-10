@@ -29,10 +29,8 @@ on:
     # 5:47 UTC on Saturdays
     - cron: "47 5 * * 6"
   workflow_dispatch:
-    workflow: "*"
 
-permissions:
-  contents: read
+permissions: {}
 
 env:
   NO_AT_BRIDGE: 1  # Necessary for GTK3 interactive test.
@@ -48,11 +46,15 @@ jobs:
 
   test-cygwin:
     runs-on: windows-latest
+    permissions:
+      contents: read
     name: Python 3.${{ matrix.python-minor-version }} on Cygwin
+    # Enable these when Cygwin has Python 3.12.
     if: >-
       github.event_name == 'workflow_dispatch' ||
-      github.event_name == 'schedule' ||
+      (false && github.event_name == 'schedule') ||
       (
+        false &&
         github.repository == 'matplotlib/matplotlib' &&
         !contains(github.event.head_commit.message, '[ci skip]') &&
         !contains(github.event.head_commit.message, '[skip ci]') &&
@@ -72,17 +74,18 @@ jobs:
       )
     strategy:
       matrix:
-        python-minor-version: [9]
+        python-minor-version: [12]
 
     steps:
       - name: Fix line endings
         run: git config --global core.autocrlf input
 
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd  # v6.0.2
         with:
           fetch-depth: 0
+          persist-credentials: false
 
-      - uses: cygwin/cygwin-install-action@v4
+      - uses: cygwin/cygwin-install-action@711d29f3da23c9f4a1798e369a6f01198c13b11a  # v6
         with:
           packages: >-
             ccache gcc-g++ gdb git graphviz libcairo-devel libffi-devel
@@ -138,21 +141,21 @@ jobs:
         # FreeType build fails with bash, succeeds with dash
 
       - name: Cache pip
-        uses: actions/cache@v4
+        uses: actions/cache@cdf6c1fa76f9f475f3d7449005a359c84ca0f306  # v5.0.3
         with:
           path: C:\cygwin\home\runneradmin\.cache\pip
           key: Cygwin-py3.${{ matrix.python-minor-version }}-pip-${{ hashFiles('requirements/*/*.txt') }}
           restore-keys: ${{ matrix.os }}-py3.${{ matrix.python-minor-version }}-pip-
 
       - name: Cache ccache
-        uses: actions/cache@v4
+        uses: actions/cache@cdf6c1fa76f9f475f3d7449005a359c84ca0f306  # v5.0.3
         with:
           path: C:\cygwin\home\runneradmin\.ccache
           key: Cygwin-py3.${{ matrix.python-minor-version }}-ccache-${{ hashFiles('src/*') }}
           restore-keys: Cygwin-py3.${{ matrix.python-minor-version }}-ccache-
 
       - name: Cache Matplotlib
-        uses: actions/cache@v4
+        uses: actions/cache@cdf6c1fa76f9f475f3d7449005a359c84ca0f306  # v5.0.3
         with:
           path: |
             C:\cygwin\home\runneradmin\.cache\matplotlib

@@ -44,6 +44,7 @@ pip-wheel-metadata/*
 .tox
 # build subproject files
 subprojects/*/
+subprojects/.*
 !subprojects/packagefiles/
 
 # OS generated files #
@@ -102,6 +103,20 @@ __pycache__
 __conda_version__.txt
 lib/png.lib
 lib/z.lib
+
+# uv files #
+############
+uv.lock
+
+# Environments #
+################
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
 
 # Jupyter files #
 #################

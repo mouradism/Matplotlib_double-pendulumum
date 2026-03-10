@@ -76,14 +76,14 @@ def test_custom_transform():
     ax1.grid(True)
 
 
-@image_comparison(['polar_box.png'], style='default', tol=0.04)
+# TODO: tighten tolerance after baseline image is regenerated for text overhaul
+@image_comparison(['polar_box.png'], style='default', tol=0.09)
 def test_polar_box():
     fig = plt.figure(figsize=(5, 5))
 
     # PolarAxes.PolarTransform takes radian. However, we want our coordinate
     # system in degree
-    tr = (Affine2D().scale(np.pi / 180., 1.) +
-          PolarAxes.PolarTransform(apply_theta_transforms=False))
+    tr = Affine2D().scale(np.pi / 180., 1.) + PolarAxes.PolarTransform()
 
     # polar projection, which involves cycle, and also has limits in
     # its coordinates, needs a special method to find the extremes
@@ -137,7 +137,7 @@ def test_polar_box():
 
 
 # Remove tol & kerning_factor when this test image is regenerated.
-@image_comparison(['axis_direction.png'], style='default', tol=0.13)
+@image_comparison(['axis_direction.png'], style='default', tol=0.15)
 def test_axis_direction():
     plt.rcParams['text.kerning_factor'] = 6
 
@@ -145,8 +145,7 @@ def test_axis_direction():
 
     # PolarAxes.PolarTransform takes radian. However, we want our coordinate
     # system in degree
-    tr = (Affine2D().scale(np.pi / 180., 1.) +
-          PolarAxes.PolarTransform(apply_theta_transforms=False))
+    tr = Affine2D().scale(np.pi / 180., 1.) + PolarAxes.PolarTransform()
 
     # polar projection, which involves cycle, and also has limits in
     # its coordinates, needs a special method to find the extremes

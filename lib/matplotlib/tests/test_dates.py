@@ -152,7 +152,8 @@ def test_date_axhspan():
     fig.subplots_adjust(left=0.25)
 
 
-@image_comparison(['date_axvspan.png'])
+# TODO: tighten tolerance after baseline image is regenerated for text overhaul
+@image_comparison(['date_axvspan.png'], tol=0.07)
 def test_date_axvspan():
     # test axvspan with date inputs
     t0 = datetime.datetime(2000, 1, 20)
@@ -176,7 +177,8 @@ def test_date_axhline():
     fig.subplots_adjust(left=0.25)
 
 
-@image_comparison(['date_axvline.png'])
+# TODO: tighten tolerance after baseline image is regenerated for text overhaul
+@image_comparison(['date_axvline.png'], tol=0.09)
 def test_date_axvline():
     # test axvline with date inputs
     t0 = datetime.datetime(2000, 1, 20)
@@ -199,7 +201,7 @@ def test_too_many_date_ticks(caplog):
     tf = datetime.datetime(2000, 1, 20)
     fig, ax = plt.subplots()
     with pytest.warns(UserWarning) as rec:
-        ax.set_xlim((t0, tf), auto=True)
+        ax.set_xlim(t0, tf, auto=True)
         assert len(rec) == 1
         assert ('Attempting to set identical low and high xlims'
                 in str(rec[0].message))
@@ -226,7 +228,8 @@ def _new_epoch_decorator(thefunc):
     return wrapper
 
 
-@image_comparison(['RRuleLocator_bounds.png'])
+# TODO: tighten tolerance after baseline image is regenerated for text overhaul
+@image_comparison(['RRuleLocator_bounds.png'], tol=0.07)
 def test_RRuleLocator():
     import matplotlib.testing.jpl_units as units
     units.register()
@@ -270,12 +273,13 @@ def test_RRuleLocator_close_minmax():
     assert list(map(str, mdates.num2date(loc.tick_values(d1, d2)))) == expected
 
 
-@image_comparison(['DateFormatter_fractionalSeconds.png'])
+# TODO: tighten tolerance after baseline image is regenerated for text overhaul
+@image_comparison(['DateFormatter_fractionalSeconds.png'], tol=0.11)
 def test_DateFormatter():
     import matplotlib.testing.jpl_units as units
     units.register()
 
-    # Lets make sure that DateFormatter will allow us to have tick marks
+    # Let's make sure that DateFormatter will allow us to have tick marks
     # at intervals of fractional seconds.
 
     t0 = datetime.datetime(2001, 1, 1, 0, 0, 0)
@@ -373,7 +377,7 @@ def test_drange():
     end = datetime.datetime(2011, 1, 2, tzinfo=mdates.UTC)
     delta = datetime.timedelta(hours=1)
     # We expect 24 values in drange(start, end, delta), because drange returns
-    # dates from an half open interval [start, end)
+    # dates from a half open interval [start, end)
     assert len(mdates.drange(start, end, delta)) == 24
 
     # Same if interval ends slightly earlier
@@ -636,6 +640,23 @@ def test_concise_formatter_show_offset(t_delta, expected):
     assert formatter.get_offset() == expected
 
 
+def test_concise_formatter_show_offset_inverted():
+    # Test for github issue #28481
+    d1 = datetime.datetime(1997, 1, 1)
+    d2 = d1 + datetime.timedelta(days=60)
+
+    fig, ax = plt.subplots()
+    locator = mdates.AutoDateLocator()
+    formatter = mdates.ConciseDateFormatter(locator)
+    ax.xaxis.set_major_locator(locator)
+    ax.xaxis.set_major_formatter(formatter)
+    ax.invert_xaxis()
+
+    ax.plot([d1, d2], [0, 0])
+    fig.canvas.draw()
+    assert formatter.get_offset() == '1997-Jan'
+
+
 def test_concise_converter_stays():
     # This test demonstrates problems introduced by gh-23417 (reverted in gh-25278)
     # In particular, downstream libraries like Pandas had their designated converters
@@ -651,10 +672,12 @@ def test_concise_converter_stays():
     fig, ax = plt.subplots()
     ax.plot(x, y)
     # Bypass Switchable date converter
-    ax.xaxis.converter = conv = mdates.ConciseDateConverter()
+    conv = mdates.ConciseDateConverter()
+    with pytest.warns(UserWarning, match="already has a converter"):
+        ax.xaxis.set_converter(conv)
     assert ax.xaxis.units is None
     ax.set_xlim(*x)
-    assert ax.xaxis.converter == conv
+    assert ax.xaxis.get_converter() == conv
 
 
 def test_offset_changes():

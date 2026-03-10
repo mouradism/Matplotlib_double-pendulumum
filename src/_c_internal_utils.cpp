@@ -7,7 +7,14 @@
 #define WIN32_LEAN_AND_MEAN
 // Windows 10, for latest HiDPI API support.
 #define WINVER 0x0A00
-#define _WIN32_WINNT 0x0A00
+#if defined(_WIN32_WINNT)
+#if _WIN32_WINNT < WINVER
+#undef _WIN32_WINNT
+#define _WIN32_WINNT WINVER
+#endif
+#else
+#define _WIN32_WINNT WINVER
+#endif
 #endif
 #include <pybind11/pybind11.h>
 #ifdef __linux__
@@ -26,7 +33,7 @@ namespace py = pybind11;
 using namespace pybind11::literals;
 
 static bool
-mpl_display_is_valid(void)
+mpl_xdisplay_is_valid(void)
 {
 #ifdef __linux__
     void* libX11;
@@ -34,13 +41,13 @@ mpl_display_is_valid(void)
     // than dlopen().
     if (getenv("DISPLAY")
         && (libX11 = dlopen("libX11.so.6", RTLD_LAZY))) {
-        typedef struct Display* (*XOpenDisplay_t)(char const*);
-        typedef int (*XCloseDisplay_t)(struct Display*);
-        struct Display* display = NULL;
-        XOpenDisplay_t XOpenDisplay = (XOpenDisplay_t)dlsym(libX11, "XOpenDisplay");
-        XCloseDisplay_t XCloseDisplay = (XCloseDisplay_t)dlsym(libX11, "XCloseDisplay");
+        struct Display* display = nullptr;
+        auto XOpenDisplay = (struct Display* (*)(char const*))
+            dlsym(libX11, "XOpenDisplay");
+        auto XCloseDisplay = (int (*)(struct Display*))
+            dlsym(libX11, "XCloseDisplay");
         if (XOpenDisplay && XCloseDisplay
-                && (display = XOpenDisplay(NULL))) {
+                && (display = XOpenDisplay(nullptr))) {
             XCloseDisplay(display);
         }
         if (dlclose(libX11)) {
@@ -50,18 +57,29 @@ mpl_display_is_valid(void)
             return true;
         }
     }
+    return false;
+#else
+    return true;
+#endif
+}
+
+static bool
+mpl_display_is_valid(void)
+{
+#ifdef __linux__
+    if (mpl_xdisplay_is_valid()) {
+        return true;
+    }
     void* libwayland_client;
     if (getenv("WAYLAND_DISPLAY")
         && (libwayland_client = dlopen("libwayland-client.so.0", RTLD_LAZY))) {
-        typedef struct wl_display* (*wl_display_connect_t)(char const*);
-        typedef void (*wl_display_disconnect_t)(struct wl_display*);
-        struct wl_display* display = NULL;
-        wl_display_connect_t wl_display_connect =
-            (wl_display_connect_t)dlsym(libwayland_client, "wl_display_connect");
-        wl_display_disconnect_t wl_display_disconnect =
-            (wl_display_disconnect_t)dlsym(libwayland_client, "wl_display_disconnect");
+        struct wl_display* display = nullptr;
+        auto wl_display_connect = (struct wl_display* (*)(char const*))
+            dlsym(libwayland_client, "wl_display_connect");
+        auto wl_display_disconnect = (void (*)(struct wl_display*))
+            dlsym(libwayland_client, "wl_display_disconnect");
         if (wl_display_connect && wl_display_disconnect
-                && (display = wl_display_connect(NULL))) {
+                && (display = wl_display_connect(nullptr))) {
             wl_display_disconnect(display);
         }
         if (dlclose(libwayland_client)) {
@@ -125,7 +143,7 @@ static void
 mpl_SetForegroundWindow(py::capsule UNUSED_ON_NON_WINDOWS(handle_p))
 {
 #ifdef _WIN32
-    if (handle_p.name() != "HWND") {
+    if (strcmp(handle_p.name(), "HWND") != 0) {
         throw std::runtime_error("Handle must be a value returned from Win32_GetForegroundWindow");
     }
     HWND handle = static_cast<HWND>(handle_p.get_pointer());
@@ -142,25 +160,19 @@ mpl_SetProcessDpiAwareness_max(void)
 #ifdef _DPI_AWARENESS_CONTEXTS_
     // These functions and options were added in later Windows 10 updates, so
     // must be loaded dynamically.
-    typedef BOOL (WINAPI *IsValidDpiAwarenessContext_t)(DPI_AWARENESS_CONTEXT);
-    typedef BOOL (WINAPI *SetProcessDpiAwarenessContext_t)(DPI_AWARENESS_CONTEXT);
-
     HMODULE user32 = LoadLibrary("user32.dll");
-    IsValidDpiAwarenessContext_t IsValidDpiAwarenessContextPtr =
-        (IsValidDpiAwarenessContext_t)GetProcAddress(
-            user32, "IsValidDpiAwarenessContext");
-    SetProcessDpiAwarenessContext_t SetProcessDpiAwarenessContextPtr =
-        (SetProcessDpiAwarenessContext_t)GetProcAddress(
-            user32, "SetProcessDpiAwarenessContext");
+    auto IsValidDpiAwarenessContext = (BOOL (WINAPI *)(DPI_AWARENESS_CONTEXT))
+        GetProcAddress(user32, "IsValidDpiAwarenessContext");
+    auto SetProcessDpiAwarenessContext = (BOOL (WINAPI *)(DPI_AWARENESS_CONTEXT))
+        GetProcAddress(user32, "SetProcessDpiAwarenessContext");
     DPI_AWARENESS_CONTEXT ctxs[3] = {
         DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2,  // Win10 Creators Update
         DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE,     // Win10
         DPI_AWARENESS_CONTEXT_SYSTEM_AWARE};         // Win10
-    if (IsValidDpiAwarenessContextPtr != NULL
-            && SetProcessDpiAwarenessContextPtr != NULL) {
-        for (int i = 0; i < sizeof(ctxs) / sizeof(DPI_AWARENESS_CONTEXT); ++i) {
-            if (IsValidDpiAwarenessContextPtr(ctxs[i])) {
-                SetProcessDpiAwarenessContextPtr(ctxs[i]);
+    if (IsValidDpiAwarenessContext && SetProcessDpiAwarenessContext) {
+        for (size_t i = 0; i < sizeof(ctxs) / sizeof(DPI_AWARENESS_CONTEXT); ++i) {
+            if (IsValidDpiAwarenessContext(ctxs[i])) {
+                SetProcessDpiAwarenessContext(ctxs[i]);
                 break;
             }
         }
@@ -176,7 +188,7 @@ mpl_SetProcessDpiAwareness_max(void)
 #endif
 }
 
-PYBIND11_MODULE(_c_internal_utils, m)
+PYBIND11_MODULE(_c_internal_utils, m, py::mod_gil_not_used())
 {
     m.def(
         "display_is_valid", &mpl_display_is_valid,
@@ -186,6 +198,16 @@ PYBIND11_MODULE(_c_internal_utils, m)
         On Linux, returns True if either $DISPLAY is set and XOpenDisplay(NULL)
         succeeds, or $WAYLAND_DISPLAY is set and wl_display_connect(NULL)
         succeeds.
+
+        On other platforms, always returns True.)""");
+    m.def(
+        "xdisplay_is_valid", &mpl_xdisplay_is_valid,
+        R"""(        --
+        Check whether the current X11 display is valid.
+
+        On Linux, returns True if either $DISPLAY is set and XOpenDisplay(NULL)
+        succeeds. Use this function if you need to specifically check for X11
+        only (e.g., for Tkinter).
 
         On other platforms, always returns True.)""");
     m.def(

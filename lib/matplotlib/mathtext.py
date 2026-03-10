@@ -20,9 +20,9 @@ import logging
 
 import matplotlib as mpl
 from matplotlib import _api, _mathtext
-from matplotlib.ft2font import LOAD_NO_HINTING
+from matplotlib.ft2font import LoadFlags
 from matplotlib.font_manager import FontProperties
-from ._mathtext import (  # noqa: reexported API
+from ._mathtext import (  # noqa: F401, reexported API
     RasterParse, VectorParse, get_unicode_index)
 
 _log = logging.getLogger(__name__)
@@ -55,7 +55,7 @@ class MathTextParser:
             Whether to return a `VectorParse` ("path") or a
             `RasterParse` ("agg", or its synonym "macosx").
         """
-        self._output_type = _api.check_getitem(
+        self._output_type = _api.getitem_checked(
             {"path": "vector", "agg": "raster", "macosx": "raster"},
             output=output.lower())
 
@@ -80,7 +80,7 @@ class MathTextParser:
         antialiased = mpl._val_or_rc(antialiased, 'text.antialiased')
         from matplotlib.backends import backend_agg
         load_glyph_flags = {
-            "vector": LOAD_NO_HINTING,
+            "vector": LoadFlags.NO_HINTING,
             "raster": backend_agg.get_hinting_flag(),
         }[self._output_type]
         return self._parse_cached(s, dpi, prop, antialiased, load_glyph_flags)
@@ -89,7 +89,7 @@ class MathTextParser:
     def _parse_cached(self, s, dpi, prop, antialiased, load_glyph_flags):
         if prop is None:
             prop = FontProperties()
-        fontset_class = _api.check_getitem(
+        fontset_class = _api.getitem_checked(
             self._font_type_mapping, fontset=prop.get_math_fontfamily())
         fontset = fontset_class(prop, load_glyph_flags)
         fontsize = prop.get_size_in_points()

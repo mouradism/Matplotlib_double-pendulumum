@@ -11,7 +11,7 @@ Based on its plotting functionality, Matplotlib also provides an interface to
 generate animations using the `~matplotlib.animation` module. An
 animation is a sequence of frames where each frame corresponds to a plot on a
 `~matplotlib.figure.Figure`. This tutorial covers a general guideline on
-how to create such animations and the different options available.
+how to create such animations and the different options available.  More information is available in the API description: `~matplotlib.animation`
 """
 
 import matplotlib.pyplot as plt
@@ -60,7 +60,7 @@ import matplotlib.animation as animation
 # 4) Save or show the animation using one of the following methods:
 #
 #    - `.pyplot.show` to show the animation in a window
-#    - `.Animation.to_html5_video` to create a HTML ``<video>`` tag
+#    - `.Animation.to_html5_video` to create an HTML ``<video>`` tag
 #    - `.Animation.to_jshtml` to create HTML code with interactive JavaScript animation
 #      controls
 #    - `.Animation.save` to save the animation to a file
@@ -111,7 +111,7 @@ z2 = g * t**2 / 2 + v02 * t
 
 scat = ax.scatter(t[0], z[0], c="b", s=5, label=f'v0 = {v0} m/s')
 line2 = ax.plot(t[0], z2[0], label=f'v0 = {v02} m/s')[0]
-ax.set(xlim=[0, 3], ylim=[-4, 10], xlabel='Time [s]', ylabel='Z [m]')
+ax.set(xlim=(0, 3), ylim=(-4, 10), xlabel='Time [s]', ylabel='Z [m]')
 ax.legend()
 
 
@@ -251,3 +251,8 @@ plt.show()
 #            writer="imagemagick", extra_args=["-quality", "100"])
 #
 # (the ``extra_args`` for *apng* are needed to reduce filesize by ~10x)
+#
+# Note that *ffmpeg* and *imagemagick* need to be separately installed.
+# A cross-platform way to obtain *ffmpeg* is to install the ``imageio_ffmpeg``
+# PyPI package, and then to set
+# ``rcParams["animation.ffmpeg_path"] = imageio_ffmpeg.get_ffmpeg_exe()``.

@@ -28,14 +28,37 @@ Fork the Matplotlib repository
 
 Matplotlib is hosted at https://github.com/matplotlib/matplotlib.git. If you
 plan on solving issues or submitting pull requests to the main Matplotlib
-repository, you should first *fork* this repository by visiting
-https://github.com/matplotlib/matplotlib.git and clicking on the
-``Fork`` :octicon:`repo-forked` button on the top right of the page. See
-`the GitHub documentation <https://docs.github.com/get-started/quickstart/fork-a-repo>`__
-for more details.
+repository, you should first fork this repository by *clicking* the
+:octicon:`repo-forked` **Fork** button near the top of the `project repository <https://github.com/matplotlib/matplotlib>`_ page.
 
-Retrieve the latest version of the code
-=======================================
+This creates a copy of the code under your account on the GitHub server. See `the GitHub
+documentation <https://docs.github.com/get-started/quickstart/fork-a-repo>`__ for more details.
+
+Set up development environment
+==============================
+
+You can either work locally on your machine, or online in
+`GitHub Codespaces`_, a cloud-based in-browser development
+environment.
+
+
+:local: If you are making extensive or frequent contributions to Matplotlib then it
+        is probably worth taking the time to set up on your local machine: As well as
+        having the convenience of your local familiar tools, you will not need to worry
+        about Codespace's monthly usage limits.
+
+:codespaces: If you are making a one-off, relatively simple, change then working in
+            GitHub Codespaces can be a good option because most of the setting
+            up is done for you and you can skip the next few sections.
+
+If you want to use Codespaces, skip to :ref:`development-codespaces`,
+otherwise, continue with the next section.
+
+Create local environment
+------------------------
+
+Get most recent code
+^^^^^^^^^^^^^^^^^^^^
 
 Now that your fork of the repository lives under your GitHub username, you can
 retrieve the most recent version of the source code with one of the following
@@ -96,8 +119,8 @@ code, as described in :ref:`development-workflow`.
    * `GitHub-Contributing to a Project
      <https://git-scm.com/book/en/v2/GitHub-Contributing-to-a-Project>`_
    * `GitHub Skills <https://skills.github.com/>`_
-   * :ref:`using-git`
-   * :ref:`git-resources`
+   * :external+scipy:ref:`using-git`
+   * :external+scipy:ref:`git-resources`
    * `Installing git <https://git-scm.com/book/en/v2/Getting-Started-Installing-Git>`_
    * `Managing remote repositories
      <https://docs.github.com/en/get-started/getting-started-with-git/managing-remote-repositories>`_
@@ -107,12 +130,14 @@ code, as described in :ref:`development-workflow`.
 .. _dev-environment:
 
 Create a dedicated environment
-==============================
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
 You should set up a dedicated environment to decouple your Matplotlib
 development from other Python and Matplotlib installations on your system.
 
-The simplest way to do this is to use either Python's virtual environment
-`venv`_ or `conda`_.
+We recommend using one of the following options for a dedicated development environment
+because these options are configured to install the Python dependencies as part of their
+setup.
 
 .. _venv: https://docs.python.org/3/library/venv.html
 .. _conda: https://docs.conda.io/projects/conda/en/latest/user-guide/tasks/manage-environments.html
@@ -125,11 +150,27 @@ The simplest way to do this is to use either Python's virtual environment
 
         python -m venv <file folder location>
 
-      and activate it with one of the following ::
+      and activate it with one of the following :
 
-        source <file folder location>/bin/activate  # Linux/macOS
-        <file folder location>\Scripts\activate.bat  # Windows cmd.exe
-        <file folder location>\Scripts\Activate.ps1  # Windows PowerShell
+      .. tab-set::
+
+         .. tab-item:: Linux and macOS
+
+            .. code-block:: bash
+
+               source <file folder location>/bin/activate  # Linux/macOS
+
+         .. tab-item:: Windows cmd.exe
+
+            .. code-block:: bat
+
+               <file folder location>\Scripts\activate.bat
+
+         .. tab-item:: Windows PowerShell
+
+            .. code-block:: ps1con
+
+               <file folder location>\Scripts\Activate.ps1
 
       On some systems, you may need to type ``python3`` instead of ``python``.
       For a discussion of the technical reasons, see `PEP-394 <https://peps.python.org/pep-0394>`_.
@@ -137,6 +178,8 @@ The simplest way to do this is to use either Python's virtual environment
       Install the Python dependencies with ::
 
         pip install -r requirements/dev/dev-requirements.txt
+
+      Remember to activate the environment whenever you start working on Matplotlib!
 
    .. tab-item:: conda environment
 
@@ -153,20 +196,71 @@ The simplest way to do this is to use either Python's virtual environment
 
         conda activate mpl-dev
 
-Remember to activate the environment whenever you start working on Matplotlib.
+      Remember to activate the environment whenever you start working on Matplotlib!
 
-Install Dependencies
-====================
 
-Most Python dependencies will be installed when :ref:`setting up the environment <dev-environment>`
-but non-Python dependencies like C++ compilers, LaTeX, and other system applications
-must be installed separately.
+Install external dependencies
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-.. toctree::
-  :maxdepth: 2
+Python dependencies were installed as part of :ref:`setting up the environment <dev-environment>`.
+Additionally, the following non-Python dependencies must also be installed locally:
 
-  ../install/dependencies
+.. rst-class:: checklist
 
+* :ref:`compile-build-dependencies`
+* :ref:`external tools used by the documentation build <doc-dependencies-external>`
+
+
+For a full list of dependencies, see :ref:`dependencies`. External dependencies do not
+need to be installed when working in codespaces.
+
+.. _development-codespaces:
+
+Create GitHub Codespace :octicon:`codespaces`
+---------------------------------------------
+
+`GitHub Codespaces`_ is a cloud-based
+in-browser development environment that comes with the appropriate setup to
+contribute to Matplotlib.
+
+#. Open codespaces on your fork by clicking on the green :octicon:`code` ``Code``
+   button on the GitHub web interface and selecting the ``Codespaces`` tab.
+
+#. Next, click on "Open codespaces on <your branch name>". You will be
+   able to change branches later, so you can select the default
+   ``main`` branch.
+
+#. After the codespace is created, you will be taken to a new browser
+   tab where you can use the terminal to activate a pre-defined conda
+   environment called ``mpl-dev``::
+
+      conda activate mpl-dev
+
+Remember to activate the *mpl-dev* environment whenever you start working on
+Matplotlib.
+
+If you need to open a GUI window with Matplotlib output on Codespaces, our
+configuration includes a `light-weight Fluxbox-based desktop
+<https://github.com/devcontainers/features/tree/main/src/desktop-lite>`_.
+You can use it by connecting to this desktop via your web browser. To do this:
+
+#. Press ``F1`` or ``Ctrl/Cmd+Shift+P`` and select
+   ``Ports: Focus on Ports View`` in the VSCode session to bring it into
+   focus. Open the ports view in your tool, select the ``noVNC`` port, and
+   click the Globe icon.
+#. In the browser that appears, click the Connect button and enter the desktop
+   password (``vscode`` by default).
+
+Check the `GitHub instructions
+<https://github.com/devcontainers/features/tree/main/src/desktop-lite#connecting-to-the-desktop>`_
+for more details on connecting to the desktop.
+
+If you also built the documentation pages, you can view them using Codespaces.
+Use the "Extensions" icon in the activity bar to install the "Live Server"
+extension. Locate the ``doc/build/html`` folder in the Explorer, right click
+the file you want to open and select "Open with Live Server."
+
+.. _Github Codespaces: https://docs.github.com/codespaces
 
 .. _development-install:
 
@@ -188,7 +282,7 @@ have :ghpull:`26621` in its history (log), you will have to reinstall from sourc
 each time you change any compiled extension code.
 
 If the installation is not working, please consult the :ref:`troubleshooting guide <troubleshooting-faq>`.
-If the guide does not offer a solution, please reach out via `chat <https://gitter.im/matplotlib/matplotlib>`_
+If the guide does not offer a solution, please reach out via `discourse <https://discourse.matplotlib.org>`_
 or :ref:`open an issue <submitting-a-bug-report>`.
 
 
@@ -228,7 +322,7 @@ you are aware of the existing issues beforehand.
 
 Install pre-commit hooks
 ========================
-`pre-commit <https://pre-commit.com/>`_ hooks save time in the review process by
+`prek <https://prek.j178.dev/>`_ hooks save time in the review process by
 identifying issues with the code before a pull request is formally opened. Most
 hooks can also aide in fixing the errors, and the checks should have
 corresponding :ref:`development workflow <development-workflow>` and
@@ -239,8 +333,8 @@ committed files, import order, and incorrect branching.
 
 Install pre-commit hooks ::
 
-    python -m pip install pre-commit
-    pre-commit install
+    python -m pip install prek
+    prek install
 
 Hooks are run automatically after the ``git commit`` stage of the
 :ref:`editing workflow<edit-flow>`. When a hook has found and fixed an error in a
@@ -249,11 +343,11 @@ file, that file must be *staged and committed* again.
 Hooks can also be run manually. All the hooks can be run, in order as
 listed in ``.pre-commit-config.yaml``, against the full codebase with ::
 
-    pre-commit run --all-files
+    prek run --all-files
 
-To run a particular hook manually, run ``pre-commit run`` with the hook id ::
+To run a particular hook manually, run ``prek run`` with the hook id ::
 
-    pre-commit run <hook id> --all-files
+    prek run <hook id> --all-files
 
 
 Please note that the ``mypy`` pre-commit hook cannot check the :ref:`type-hints`

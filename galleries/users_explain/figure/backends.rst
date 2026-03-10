@@ -211,7 +211,7 @@ wxAgg     Agg rendering to a wxWidgets_ canvas (requires wxPython_ 4).
 .. _`Scalable Vector Graphics`: https://en.wikipedia.org/wiki/Scalable_Vector_Graphics
 .. _pgf: https://ctan.org/pkg/pgf
 .. _Cairo: https://www.cairographics.org
-.. _PyGObject: https://wiki.gnome.org/action/show/Projects/PyGObject
+.. _PyGObject: https://pygobject.gnome.org/
 .. _pycairo: https://www.cairographics.org/pycairo/
 .. _cairocffi: https://doc.courtbouillon.org/cairocffi/stable/
 .. _wxPython: https://www.wxpython.org/
@@ -253,6 +253,35 @@ backend, use ``module://name.of.the.backend`` as the backend name, e.g.
 
 Information for backend implementers is available at :ref:`writing_backend_interface`.
 
+Backend API versions
+--------------------
+Matplotlib aims to maintain backward compatibility on backends. Nevertheless, we
+want to be able to evolve the backend API to support new features. Defining backend
+API versions will help to communicate which API is supported by a given version of
+Matplotlib.
+
+The following backend API versions exist
+
+.. list-table::
+   :header-rows: 1
+
+   * - API version
+     - Supported since
+     - Description
+   * - 1.0
+     - Matplotlib 3.10
+     - This is the starting point for systematic definition of backend versions.
+       Most of the API will work far back, but there is no benefit in retroactively
+       uncovering all prior the changes.
+   * - 1.1
+     - Matplotlib 3.11
+     - `.RendererBase.draw_path_collection` gained a new optional parameter
+       *hatchcolor*. The presence of the parameter is inferred by introspection, so
+       that matplotlib 3.11+ will still work with backends implementing API version
+       1.0.
+
+There is currently no plan to remove support for older API versions.
+
 .. _figures-not-showing:
 
 Debugging the figure windows not showing
@@ -292,14 +321,12 @@ program that can be run to test basic functionality.  If this test fails, try re
 QtAgg, QtCairo, Qt5Agg, and Qt5Cairo
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Test ``PyQt5``.
-
-If you have ``PySide`` or ``PyQt6`` installed rather than ``PyQt5``, just change the import
-accordingly:
+Test ``PyQt6`` (if you have ``PyQt5``, ``PySide2`` or ``PySide6`` installed
+rather than ``PyQt6``, just change the import accordingly):
 
 .. code-block:: bash
 
-   python -c "from PyQt5.QtWidgets import *; app = QApplication([]); win = QMainWindow(); win.show(); app.exec()"
+   python3 -c "from PyQt6.QtWidgets import *; app = QApplication([]); win = QMainWindow(); win.show(); app.exec()"
 
 
 TkAgg and TkCairo
@@ -325,14 +352,9 @@ wxAgg and wxCairo
 
 Test ``wx``:
 
-.. code-block:: python3
+.. code-block:: bash
 
-   import wx
-
-   app = wx.App(False)  # Create a new app, don't redirect stdout/stderr to a window.
-   frame = wx.Frame(None, wx.ID_ANY, "Hello World") # A Frame is a top-level window.
-   frame.Show(True)     # Show the frame.
-   app.MainLoop()
+   python3 -c "import wx; app = wx.App(); frame = wx.Frame(None); frame.Show(); app.MainLoop()"
 
 If the test works for your desired backend but you still cannot get Matplotlib to display a figure, then contact us (see
 :ref:`get-help`).

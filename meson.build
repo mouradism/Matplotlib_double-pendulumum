@@ -1,7 +1,10 @@
 project(
   'matplotlib',
   'c', 'cpp',
-  version: run_command(find_program('python3'), '-m', 'setuptools_scm', check: true).stdout().strip(),
+  version: run_command(
+    # Also keep version in sync with pyproject.toml.
+    find_program('python3', 'python', version: '>= 3.11'),
+    '-m', 'setuptools_scm', check: true).stdout().strip(),
   # qt_editor backend is MIT
   # ResizeObserver at end of lib/matplotlib/backends/web_backend/js/mpl.js is CC0
   # Carlogo, STIX and Computer Modern is OFL
@@ -28,6 +31,10 @@ project(
   ],
 )
 
+# Enable bug fixes in Agg
+add_project_arguments('-DMPL_FIX_AGG_IMAGE_FILTER_LUT_BUGS', language : 'cpp')
+add_project_arguments('-DMPL_FIX_AGG_INTERPOLATION_ENDPOINT_BUG', language : 'cpp')
+
 cc = meson.get_compiler('c')
 cpp = meson.get_compiler('cpp')
 
@@ -36,7 +43,7 @@ py_mod = import('python')
 py3 = py_mod.find_installation(pure: false)
 py3_dep = py3.dependency()
 
-pybind11_dep = dependency('pybind11', version: '>=2.6')
+pybind11_dep = dependency('pybind11', version: '>=2.13.2')
 
 subdir('extern')
 subdir('src')

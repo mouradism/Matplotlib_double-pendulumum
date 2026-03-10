@@ -75,7 +75,7 @@
 namespace py = pybind11;
 
 
-/* An edge of a triangle consisting of an triangle index in the range 0 to
+/* An edge of a triangle consisting of a triangle index in the range 0 to
  * ntri-1 and an edge index in the range 0 to 2.  Edge i goes from the
  * triangle's point i to point (i+1)%3. */
 struct TriEdge final
@@ -407,12 +407,10 @@ private:
      * intersect any boundary.
      *   contour: Contour to add new lines to.
      *   level: Contour level.
-     *   on_upper: Whether on upper or lower contour level.
-     *   filled: Whether contours are filled or not. */
+     *   on_upper: Whether on upper or lower contour level. */
     void find_interior_lines(Contour& contour,
                              const double& level,
-                             bool on_upper,
-                             bool filled);
+                             bool on_upper);
 
     /* Follow contour line around boundary of the Triangulation from the
      * specified TriEdge to its end which can be on either the lower or upper

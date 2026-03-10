@@ -32,6 +32,8 @@ particular the :ref:`additional dependencies <test-dependencies>` for testing.
    You have to additionally get the reference images from the repository,
    because they are not distributed with pre-built Matplotlib packages.
 
+.. _run_tests:
+
 Running the tests
 -----------------
 
@@ -49,6 +51,9 @@ In the root directory of your development repository run::
                                processes (requires pytest-xdist_)
 ``--capture=no`` or ``-s``     Do not capture stdout
 =============================  ===========
+
+Some tests may use a large amount of memory (>0.5GiB); to enable those tests, set the
+environment variable ``MPL_TEST_EXPENSIVE``.
 
 To run a single test from the command line, you can provide a file path, optionally
 followed by the function separated by two colons, e.g., (tests do not need to be
@@ -145,8 +150,8 @@ tests it::
    from matplotlib.testing.decorators import image_comparison
    import matplotlib.pyplot as plt
 
-   @image_comparison(baseline_images=['line_dashes'], remove_text=True,
-                     extensions=['png'], style='mpl20')
+   @image_comparison(baseline_images=['line_dashes.png'], remove_text=True,
+                     style='mpl20')
    def test_line_dashes():
        fig, ax = plt.subplots()
        ax.plot(range(10), linestyle=(0, (3, 3)), lw=5)
@@ -159,11 +164,21 @@ case :file:`lib/matplotlib/tests/baseline_images/test_lines`).  Put this new
 file under source code revision control (with ``git add``).  When rerunning
 the tests, they should now pass.
 
+If you wish to compare multiple file formats, then omit the extension from the
+baseline image name and optionally pass the *extensions* argument::
+
+   @image_comparison(baseline_images=['line_dashes'], remove_text=True,
+                     extensions=['png', 'svg'], style='mpl20')
+   def test_line_dashes():
+       fig, ax = plt.subplots()
+       ax.plot(range(10), linestyle=(0, (3, 3)), lw=5)
+
 It is preferred that new tests use ``style='mpl20'`` as this leads to smaller
 figures and reflects the newer look of default Matplotlib plots. Also, if the
-texts (labels, tick labels, etc) are not really part of what is tested, use
-``remove_text=True`` as this will lead to smaller figures and reduce possible
-issues with font mismatch on different platforms.
+texts (labels, tick labels, etc) are not really part of what is tested, use the
+``remove_text=True`` argument or add the ``text_placeholders`` fixture as this
+will lead to smaller figures and reduce possible issues with font mismatch on
+different platforms.
 
 
 Compare two methods of creating an image
@@ -189,7 +204,7 @@ vs plotting the circle using the parametric equation of a circle ::
    @check_figures_equal()
    def test_parametric_circle_plot(fig_test, fig_ref):
 
-       xo, yo= (.5, .5)
+       xo = yo = 0.5
        radius = 0.4
 
        ax_test = fig_test.subplots()
@@ -203,7 +218,7 @@ vs plotting the circle using the parametric equation of a circle ::
        ax_ref.add_artist(red_circle_ref)
 
        for ax in [ax_ref, ax_test]:
-           ax.set(xlim=(0,1), ylim=(0,1), aspect='equal')
+           ax.set(xlim=(0, 1), ylim=(0, 1), aspect='equal')
 
 Both comparison decorators have a tolerance argument ``tol`` that is used to specify the
 tolerance for difference in color value between the two images, where 255 is the maximal
@@ -252,7 +267,7 @@ Using tox
 
 `Tox <https://tox.readthedocs.io/en/latest/>`_ is a tool for running tests
 against multiple Python environments, including multiple versions of Python
-(e.g., 3.7, 3.8) and even different Python implementations altogether
+(e.g., 3.10, 3.11) and even different Python implementations altogether
 (e.g., CPython, PyPy, Jython, etc.), as long as all these versions are
 available on your system's $PATH (consider using your system package manager,
 e.g. apt-get, yum, or Homebrew, to install them).
@@ -269,16 +284,17 @@ You can also run tox on a subset of environments:
 
 .. code-block:: bash
 
-    $ tox -e py38,py39
+    $ tox -e py310,py311
 
-Tox processes everything serially so it can take a long time to test
-several environments. To speed it up, you might try using a new,
-parallelized version of tox called ``detox``. Give this a try:
+Tox processes environments sequentially by default,
+which can be slow when testing multiple environments.
+To speed this up, tox now includes built-in parallelization support
+via the --parallel flag. Give it a try:
 
 .. code-block:: bash
 
-    $ pip install -U -i http://pypi.testrun.org detox
-    $ detox
+    $ tox --parallel auto
+
 
 Tox is configured using a file called ``tox.ini``. You may need to
 edit this file if you want to add new environments to test (e.g.,

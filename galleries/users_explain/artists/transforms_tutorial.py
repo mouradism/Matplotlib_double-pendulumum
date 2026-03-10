@@ -22,51 +22,51 @@ the *display* coordinates.  In the "Transformation Object" column, ``ax`` is a
 :class:`~matplotlib.figure.Figure` instance, and ``subfigure`` is a
 :class:`~matplotlib.figure.SubFigure` instance.
 
+.. _coordinate-systems:
 
 +----------------+-----------------------------------+-----------------------------+
 |Coordinate      |Description                        |Transformation object        |
 |system          |                                   |from system to display       |
 +================+===================================+=============================+
-|"data"          |The coordinate system of the data  |``ax.transData``             |
+|*data*          |The coordinate system of the data  |``ax.transData``             |
 |                |in the Axes.                       |                             |
 +----------------+-----------------------------------+-----------------------------+
-|"axes"          |The coordinate system of the       |``ax.transAxes``             |
+|*axes*          |The coordinate system of the       |``ax.transAxes``             |
 |                |`~matplotlib.axes.Axes`; (0, 0)    |                             |
 |                |is bottom left of the Axes, and    |                             |
 |                |(1, 1) is top right of the Axes.   |                             |
 +----------------+-----------------------------------+-----------------------------+
-|"subfigure"     |The coordinate system of the       |``subfigure.transSubfigure`` |
+|*subfigure*     |The coordinate system of the       |``subfigure.transSubfigure`` |
 |                |`.SubFigure`; (0, 0) is bottom left|                             |
 |                |of the subfigure, and (1, 1) is top|                             |
 |                |right of the subfigure.  If a      |                             |
 |                |figure has no subfigures, this is  |                             |
 |                |the same as ``transFigure``.       |                             |
 +----------------+-----------------------------------+-----------------------------+
-|"figure"        |The coordinate system of the       |``fig.transFigure``          |
+|*figure*        |The coordinate system of the       |``fig.transFigure``          |
 |                |`.Figure`; (0, 0) is bottom left   |                             |
 |                |of the figure, and (1, 1) is top   |                             |
 |                |right of the figure.               |                             |
 +----------------+-----------------------------------+-----------------------------+
-|"figure-inches" |The coordinate system of the       |``fig.dpi_scale_trans``      |
+|*figure-inches* |The coordinate system of the       |``fig.dpi_scale_trans``      |
 |                |`.Figure` in inches; (0, 0) is     |                             |
 |                |bottom left of the figure, and     |                             |
 |                |(width, height) is the top right   |                             |
 |                |of the figure in inches.           |                             |
 +----------------+-----------------------------------+-----------------------------+
-|"xaxis",        |Blended coordinate systems, using  |``ax.get_xaxis_transform()``,|
-|"yaxis"         |data coordinates on one direction  |``ax.get_yaxis_transform()`` |
+|*xaxis*,        |Blended coordinate systems, using  |``ax.get_xaxis_transform()``,|
+|*yaxis*         |data coordinates on one direction  |``ax.get_yaxis_transform()`` |
 |                |and axes coordinates on the other. |                             |
 +----------------+-----------------------------------+-----------------------------+
-|"display"       |The native coordinate system of the|`None`, or                   |
+|*display*       |The native coordinate system of the|`None`, or                   |
 |                |output ; (0, 0) is the bottom left |`.IdentityTransform()`       |
 |                |of the window, and (width, height) |                             |
 |                |is top right of the output in      |                             |
 |                |"display units".                   |                             |
 |                |                                   |                             |
-|                |The exact interpretation of the    |                             |
-|                |units depends on the back end. For |                             |
-|                |example it is pixels for Agg and   |                             |
-|                |points for svg/pdf.                |                             |
+|                |"Display units" depends on the     |                             |
+|                |backend. For example, Agg uses     |                             |
+|                |pixels, and SVG/PDF use points.    |                             |
 +----------------+-----------------------------------+-----------------------------+
 
 The `~matplotlib.transforms.Transform` objects are naive to the source and
@@ -400,7 +400,7 @@ plt.show()
 fig, ax = plt.subplots()
 xdata, ydata = (0.2, 0.7), (0.5, 0.5)
 ax.plot(xdata, ydata, "o")
-ax.set_xlim((0, 1))
+ax.set_xlim(0, 1)
 
 trans = (fig.dpi_scale_trans +
          transforms.ScaledTranslation(xdata[0], ydata[0], ax.transData))
@@ -563,19 +563,18 @@ plt.show()
 # you call ``ax.set_xscale('log')``, the xaxis updates its scale to a
 # :class:`matplotlib.scale.LogScale` instance.
 #
-# For non-separable axes the PolarAxes, there is one more piece to
-# consider, the projection transformation.  The ``transData``
-# :class:`matplotlib.projections.polar.PolarAxes` is similar to that for
-# the typical separable matplotlib Axes, with one additional piece
-# ``transProjection``::
+# For non-separable axes, there are some more pieces to consider, in
+# particular the projection transformation.  For example, the ``transData``
+# of `matplotlib.projections.polar.PolarAxes` is more complex than that of a
+# typical separable Axes::
 #
-#        self.transData = (
-#            self.transScale + self.transShift + self.transProjection +
-#            (self.transProjectionAffine + self.transWedge + self.transAxes))
+#     self.transData = (
+#         self.transScale + self.transShift + self.transProjection +
+#         (self.transProjectionAffine + self.transWedge + self.transAxes))
 #
-# ``transProjection`` handles the projection from the space,
-# e.g., latitude and longitude for map data, or radius and theta for polar
-# data, to a separable Cartesian coordinate system.  There are several
+# ``transProjection`` handles the projection from data coordinates
+# (e.g., latitude and longitude for map data, or radius and theta for polar
+# data), to a separable Cartesian coordinate system.  There are several
 # projection examples in the :mod:`matplotlib.projections` package, and the
 # best way to learn more is to open the source for those packages and
 # see how to make your own, since Matplotlib supports extensible axes

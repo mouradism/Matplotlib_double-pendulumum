@@ -7,7 +7,8 @@ from mpl_toolkits.axisartist.axislines import AxesZero, SubplotZero, Subplot
 from mpl_toolkits.axisartist import Axes, SubplotHost
 
 
-@image_comparison(['SubplotZero.png'], style='default')
+# TODO: tighten tolerance after baseline image is regenerated for text overhaul
+@image_comparison(['SubplotZero.png'], style='default', tol=0.02)
 def test_SubplotZero():
     # Remove this line when this test image is regenerated.
     plt.rcParams['text.kerning_factor'] = 6
@@ -28,7 +29,8 @@ def test_SubplotZero():
     ax.set_ylabel("Test")
 
 
-@image_comparison(['Subplot.png'], style='default')
+# TODO: tighten tolerance after baseline image is regenerated for text overhaul
+@image_comparison(['Subplot.png'], style='default', tol=0.02)
 def test_Subplot():
     # Remove this line when this test image is regenerated.
     plt.rcParams['text.kerning_factor'] = 6
@@ -83,8 +85,8 @@ def test_ParasiteAxesAuxTrans():
             getattr(ax2, name)(xx, yy, data[:-1, :-1])
         else:
             getattr(ax2, name)(xx, yy, data)
-        ax1.set_xlim((0, 5))
-        ax1.set_ylim((0, 5))
+        ax1.set_xlim(0, 5)
+        ax1.set_ylim(0, 5)
 
     ax2.contour(xx, yy, data, colors='k')
 
@@ -119,7 +121,7 @@ def test_axisline_style_size_color():
 @image_comparison(['axisline_style_tight.png'], remove_text=True,
                   style='mpl20')
 def test_axisline_style_tight():
-    fig = plt.figure(figsize=(2, 2))
+    fig = plt.figure(figsize=(2, 2), layout='tight')
     ax = fig.add_subplot(axes_class=AxesZero)
     ax.axis["xzero"].set_axisline_style("-|>", size=5, facecolor='g')
     ax.axis["xzero"].set_visible(True)
@@ -129,10 +131,9 @@ def test_axisline_style_tight():
     for direction in ("left", "right", "bottom", "top"):
         ax.axis[direction].set_visible(False)
 
-    fig.tight_layout()
 
-
-@image_comparison(['subplotzero_ylabel.png'], style='mpl20')
+# TODO: tighten tolerance after baseline image is regenerated for text overhaul
+@image_comparison(['subplotzero_ylabel.png'], style='mpl20', tol=0.02)
 def test_subplotzero_ylabel():
     fig = plt.figure()
     ax = fig.add_subplot(111, axes_class=SubplotZero)

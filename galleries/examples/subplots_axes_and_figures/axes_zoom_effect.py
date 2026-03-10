@@ -1,16 +1,14 @@
 """
 ================
-Axes Zoom Effect
+Axes zoom effect
 ================
 
 """
 
 import matplotlib.pyplot as plt
 
-from matplotlib.transforms import (Bbox, TransformedBbox,
-                                   blended_transform_factory)
-from mpl_toolkits.axes_grid1.inset_locator import (BboxConnector,
-                                                   BboxConnectorPatch,
+from matplotlib.transforms import Bbox, TransformedBbox, blended_transform_factory
+from mpl_toolkits.axes_grid1.inset_locator import (BboxConnector, BboxConnectorPatch,
                                                    BboxPatch)
 
 
@@ -120,3 +118,10 @@ axs["zoom2"].set(xlim=(2, 3))
 zoom_effect02(axs["zoom2"], axs["main"])
 
 plt.show()
+
+# %%
+# .. tags::
+#
+#    component: subplot
+#    component: transform
+#    level: advanced

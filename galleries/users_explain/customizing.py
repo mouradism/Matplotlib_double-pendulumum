@@ -8,9 +8,12 @@
 Customizing Matplotlib with style sheets and rcParams
 =====================================================
 
-Tips for customizing the properties and default styles of Matplotlib.
+Many aspects of Matplotlib's behavior and default styles can be customized
+through the use of rc (runtime configuration) settings. The current values
+are stored in `~matplotlib.rcParams`.
 
-There are three ways to customize Matplotlib:
+There are three ways to customize Matplotlib, all of which effectively change
+`~matplotlib.rcParams`:
 
 1. :ref:`Setting rcParams at runtime<customizing-with-dynamic-rc-settings>`.
 2. :ref:`Using style sheets<customizing-with-style-sheets>`.
@@ -234,8 +237,8 @@ plt.show()
 #
 # 4. :file:`{INSTALL}/matplotlib/mpl-data/matplotlibrc`, where
 #    :file:`{INSTALL}` is something like
-#    :file:`/usr/lib/python3.9/site-packages` on Linux, and maybe
-#    :file:`C:\\Python39\\Lib\\site-packages` on Windows. Every time you
+#    :file:`/usr/lib/python3.10/site-packages` on Linux, and maybe
+#    :file:`C:\\Python310\\Lib\\site-packages` on Windows. Every time you
 #    install matplotlib, this file will be overwritten, so if you want
 #    your customizations to be saved, please move this file to your
 #    user-specific matplotlib directory.

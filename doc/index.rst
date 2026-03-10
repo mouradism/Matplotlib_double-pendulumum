@@ -14,30 +14,12 @@ and interactive visualizations.
 Install
 =======
 
-.. tab-set::
-    :class: sd-width-content-min
+.. include:: install/quick_install.inc.rst
 
-    .. tab-item:: pip
+.. toctree::
+    :hidden:
 
-        .. code-block:: bash
-
-            pip install matplotlib
-
-    .. tab-item:: conda
-
-        .. code-block:: bash
-
-            conda install -c conda-forge matplotlib
-
-    .. tab-item:: other
-
-        .. toctree::
-            :maxdepth: 2
-
-            install/index
-
-For more detailed instructions, see the
-:doc:`installation guide <install/index>`.
+    install/index
 
 Learn
 =====
@@ -106,6 +88,7 @@ Community
 
     .. grid-item::
 
+        .. rst-class:: section-toc
         .. toctree::
             :maxdepth: 2
 
@@ -133,7 +116,7 @@ What's new
         .. toctree::
             :maxdepth: 1
 
-            users/release_notes.rst
+            release/release_notes.rst
 
 
 Contribute
@@ -144,11 +127,11 @@ Contribute
 
     .. grid-item::
 
-        Matplotlib is a community project maintained for and by its users.
-
-        There are many ways you can help!
+        Matplotlib is a community project maintained for and by its users. See
+        :ref:`developers-guide-index` for the many ways you can help!
 
     .. grid-item::
+        .. rst-class:: section-toc
         .. toctree::
             :maxdepth: 2
 
@@ -168,7 +151,7 @@ About us
         and hard things possible.
 
     .. grid-item::
-
+        .. rst-class:: section-toc
         .. toctree::
             :maxdepth: 2
 
